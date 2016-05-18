@@ -1,132 +1,89 @@
-var profileData = [];
-var endProgram = 0;
+var fullDeck = [];
 
-// First function of the program, home screen
-var userChoose = function () {
-	do {
-	var answer = prompt("Choose one (type A, B, C, etc...) A) Enter New User...B) Look Up User By First Name...C)Look Up User By Last Name...D) Print Out All Users...E) End Program");
-	answer = answer.toUpperCase();
-} while (answer !== "A" && answer !== "B" && answer !== "C" && answer !== "D" && answer !== "E") 
-	if (answer === "A") {
-		ifA();
-	} else if (answer === "B") {
-		ifB();
-	} else if (answer === "E") {
-		endProgram = 1;
-	} else if (answer === "D") {
-		ifD();
-	} else if (answer === "C") {
-		ifC();
-	}
-};
-
-// Function for choosing C on the first choice screen, searches for a user by last name, then deposits or withdrawls funds
-var ifC = function () {
-	var lastQuestion = prompt("Search by customer's last name:");
-
-	for (x = 0; x < profileData.length; x++) {	
-		var thisHash = profileData[x];
-		if (thisHash.last === lastQuestion.toUpperCase()) {
-			alert("The current balance for " + thisHash.first + " " + thisHash.last + " is $" + thisHash.amount);
-			var depositQuestion = prompt("Do you want to deposit or withdrawl from " + thisHash.first + "'s account? ANSWER DEPOSIT OR WITHDRAWL");
-				if (depositQuestion.toUpperCase() === "DEPOSIT") {
-					var depositAmount = prompt("Amount to deposit:");
-					depositAmount = parseFloat(depositAmount);
-					thisHash.amount = thisHash.amount + depositAmount;
-					alert(thisHash.first + " " + thisHash.last + " new balance is $" + thisHash.amount );
-				} else if (depositQuestion.toUpperCase() === "WITHDRAWL") {
-					var withdrawlAmount = prompt("Amount to withdrawl:");
-					if (thisHash.amount - withdrawlAmount >= 0) {
-						thisHash.amount = thisHash.amount - withdrawlAmount;
-					} else {
-						alert("Cannot Make Withdrawl, not enough funds.");
-					}
-					alert(thisHash.first + " " + thisHash.last + " new balance is $" + thisHash.amount);
-				} else {
-					alert("Please Try Again, Not A Valid Response");
-				}
+// Function to create each suit, iterate over 13 cards then pushes to the fullDeck array
+var suitDeck = function (cardSuit) {
+	for (x = 1; x < 14; x++) {
+		var eachCard = [];
+		eachCard["suit"] = cardSuit;
+		eachCard["value"] = x;
+		if (eachCard.value === 1) {
+			eachCard.value = "A";
+		} else if (eachCard.value === 11) {
+			eachCard.value = "J";
+		} else if (eachCard.value === 12) {
+			eachCard.value = "Q";
+		} else if (eachCard.value === 13) {
+			eachCard.value = "K";
 		}
-
+		fullDeck.push(eachCard);
 	}
 };
 
-// Function for choosing D on the first choice screen, cycles through all users' profiles alerting of the amounts.
-var ifD = function () {
-	for (x = 0; x < profileData.length; x++) {
-		var thisHash = profileData[x];
-		alert(thisHash.first + " " + thisHash.last + " " + thisHash.amount);
+//Selects a random card from 0 to 51 in the fullDeck array, then splices that card from the fullDeck array
+var randomCard = function () {
+	var drawCard = Math.floor(Math.random() * (fullDeck.length));
+	var returnedCard = fullDeck[drawCard];
+	fullDeck.splice(drawCard , 1);
+	return returnedCard;
+
+};
+
+//Resets the fullDeck array to 52 cards when the funciton is called
+var shuffleCards = function () {
+suitDeck("H");
+suitDeck("D");
+suitDeck("S");
+suitDeck("C");
+};
+
+
+//Deals cards for the computer and player
+var deal = function () {
+	var player1 = randomCard();
+	var player2 = randomCard();
+	var computer1 = randomCard();
+	var computer2 = randomCard();
+	alert("Your first card is " + player1.suit + player1.value +", your second card is " + player2.suit + player2.value + ". The computer's first card is " + computer1.suit + computer1.value + ", the computer's second card is face down.");
+	player1val = valueConverter(player1.value);
+	player2val = valueConverter(player2.value);
+	computer1val = valueConverter(computer1.value);
+	computer2val = valueConverter(computer2.value);
+	var playerTotal = player1val + player2val
+	var computerTotal = computer1val + computer2val
+	var hitOrStay = prompt("Your total is " + playerTotal + ". The computer is showing a " + computer1.suit + computer1.value + ". Type hit or stay.");
+	
+};
+
+//Tells if the player total beats the computers total
+var winCheck = function (playerTotal, computerTotal) {
+	if (playerTotal) {
+		
 	}
-}
+};
 
-// Function for choosing B on the first choice screen, Searches for a user by first name, then deposits or withdrawls funds
-var ifB = function () {
-	var firstQuestion = prompt("Search by customer's first name:");
-
-	for (x = 0; x < profileData.length; x++) {	
-		var thisHash = profileData[x];
-		if (thisHash.first === firstQuestion.toUpperCase()) {
-			alert("The current balance for " + thisHash.first + " " + thisHash.last + " is $" + thisHash.amount);
-			var depositQuestion = prompt("Do you want to deposit or withdrawl from " + thisHash.first + "'s account? ANSWER DEPOSIT OR WITHDRAWL");
-				if (depositQuestion.toUpperCase() === "DEPOSIT") {
-					var depositAmount = prompt("Amount to deposit:");
-					depositAmount = parseFloat(depositAmount);
-					thisHash.amount = thisHash.amount + depositAmount;
-					alert(thisHash.first + " " + thisHash.last + " new balance is $" + thisHash.amount );
-				} else if (depositQuestion.toUpperCase() === "WITHDRAWL") {
-					var withdrawlAmount = prompt("Amount to withdrawl:");
-					if (thisHash.amount - withdrawlAmount >= 0) {
-						thisHash.amount = thisHash.amount - withdrawlAmount;
-					} else {
-						alert("Cannot Make Withdrawl, not enough funds.");
-					}
-					alert(thisHash.first + " " + thisHash.last + " new balance is $" + thisHash.amount);
-				} else {
-					alert("Please Try Again, Not A Valid Response");
-				}
-		}
-
+//Converts Facecards and aces into numeric values 
+var valueConverter = function (card) {
+	var cardValue = card;
+	if (cardValue === "K" || cardValue === "Q" || cardValue === "J") {
+		cardValue = 10;
+	} else if (cardValue === "A") {
+		cardValue = 11;
 	}
+	return cardValue;
 };
 
 
 
-// Function for choosing A on the first choice screen
-var ifA = function () {
-	newUserComplete(newUserFirst(), newUserLast(), newUserBalance());
+// Function for hitting to receive a new card
+var hit = function () {
+	hitCard = randomCard();
+	return hitCard;
 };
 
-// Function to get user's first name
-var newUserFirst = function () {
-	var firstName = prompt("Enter the customer's first name");
-	firstName = firstName.toUpperCase();
-	return firstName;
-};
 
-// Function to get user's last name
-var newUserLast = function () {
-	var lastName = prompt("Enter the customer's last name");
-	lastName = lastName.toUpperCase();
-	return lastName;
-};
 
-// Function to get a new user's beginning balance
-var newUserBalance = function () {
-	do {
-	var newBalance = prompt("Enter the customer's initial deposit");
-	} while (isNaN(newBalance) || newBalance <= 0)
-	newBalance = parseFloat(newBalance);
-	return newBalance;
-};
 
-// Function to save all the user's information into a Hashtable
-var newUserComplete = function(first, last, amount) {
-	userProfile = {};
-	userProfile["first"] = first;
-	userProfile["last"] = last;
-	userProfile["amount"] = amount;
-	profileData.push(userProfile);
-};
+shuffleCards();
+deal();
 
-do {
-userChoose();
-} while (endProgram === 0)
+
